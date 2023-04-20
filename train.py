@@ -213,6 +213,7 @@ def train(accelerator, config):
     
 
 if __name__ == "__main__":
+    print("ran!!")
     # parse arguments by reading in a config
     parser = ArgumentParser()
     parser.add_argument("--config", type=str, default="config.yaml")
