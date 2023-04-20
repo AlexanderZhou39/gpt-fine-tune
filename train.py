@@ -145,7 +145,7 @@ def train(accelerator, config):
             # get gradient norm of all params
 
             # log LR in case something weird happens 
-            if step > 0 and step % (config["eval_every"] // 10) == 0:
+            # if step > 0 and step % (config["eval_every"] // 10) == 0:
                 # if config["wandb"]:
                 #     curr_step = step + epoch * len(train_dataloader)
                 #     accelerator.log({"lr": scheduler.get_last_lr()[0]}, step=curr_step)
