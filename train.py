@@ -126,8 +126,8 @@ def train(accelerator, config):
 
 
     # log gradients
-    if accelerator.is_main_process and config["wandb"]:
-        wandb.watch(model, log_freq=config["log_grads_every"], log="all")
+    # if accelerator.is_main_process and config["wandb"]:
+    #     wandb.watch(model, log_freq=config["log_grads_every"], log="all")
 
     for epoch in range(config["num_epochs"]):
         train_loss = MeanMetric(nan_strategy="error").to(model.device)
@@ -146,9 +146,9 @@ def train(accelerator, config):
 
             # log LR in case something weird happens 
             if step > 0 and step % (config["eval_every"] // 10) == 0:
-                if config["wandb"]:
-                    curr_step = step + epoch * len(train_dataloader)
-                    accelerator.log({"lr": scheduler.get_last_lr()[0]}, step=curr_step)
+                # if config["wandb"]:
+                #     curr_step = step + epoch * len(train_dataloader)
+                #     accelerator.log({"lr": scheduler.get_last_lr()[0]}, step=curr_step)
 
             if (step + 1) % gradient_accumulation_steps == 0 or step == len(train_dataloader) - 1:
                 optimizer.step()
@@ -170,9 +170,9 @@ def train(accelerator, config):
                     "val_loss": val_loss.compute()
                 }
 
-                if config["wandb"]:
-                    curr_step = step + epoch * len(train_dataloader)
-                    accelerator.log({**log_train, **log_val}, step=curr_step)
+                # if config["wandb"]:
+                #     curr_step = step + epoch * len(train_dataloader)
+                #     accelerator.log({**log_train, **log_val}, step=curr_step)
 
                 accelerator.print(f"Current LR: {scheduler.get_last_lr()[0]}")
                 accelerator.print(format_metrics(log_train, "train", f" step {step} "))
@@ -184,13 +184,13 @@ def train(accelerator, config):
         accelerator.print(f"Pushing to HF hub")
         accelerator.wait_for_everyone()
         unwrapped_model = accelerator.unwrap_model(model)
-        try:
-            if accelerator.is_main_process:
-                unwrapped_model.push_to_hub(config["save_name"] + f"-epoch_{epoch}", private=True)
+        # try:
+        #     if accelerator.is_main_process:
+        #         unwrapped_model.push_to_hub(config["save_name"] + f"-epoch_{epoch}", private=True)
 
-        except Exception as e:
-            accelerator.print(e)
-            accelerator.print(f"Failed to push to hub")
+        # except Exception as e:
+        #     accelerator.print(e)
+        #     accelerator.print(f"Failed to push to hub")
 
         unwrapped_model.save_pretrained(
             f"{config['output_dir']}/epoch_{epoch}",
@@ -221,14 +221,14 @@ if __name__ == "__main__":
 
     config = read_config(args.config)
 
-    if config["wandb"]:
-        accelerator = Accelerator(log_with="wandb")
-        accelerator.init_trackers(
-            project_name=config["wandb_project_name"],
-            config=config,
-            init_kwargs={"wandb": {"entity": config["wandb_entity"]}},
-        )
-    else:
-        accelerator = Accelerator()
+    # if config["wandb"]:
+    #     accelerator = Accelerator(log_with="wandb")
+    #     accelerator.init_trackers(
+    #         project_name=config["wandb_project_name"],
+    #         config=config,
+    #         init_kwargs={"wandb": {"entity": config["wandb_entity"]}},
+    #     )
+    # else:
+    accelerator = Accelerator()
     print("got to training")
     train(accelerator, config=config)
