@@ -41,6 +41,7 @@ def train(accelerator, config):
 
     accelerator.print(config)
     accelerator.print(f"Using {accelerator.num_processes} GPUs")
+    print(f"using {accelerator.num_processes} GPUs")
 
     tokenizer = AutoTokenizer.from_pretrained(config['tokenizer_name'], model_max_length=config['max_length'])
     # if no pad token, set it to eos
@@ -229,5 +230,5 @@ if __name__ == "__main__":
         )
     else:
         accelerator = Accelerator()
-
+    print("got to training")
     train(accelerator, config=config)
